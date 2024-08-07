@@ -1,11 +1,15 @@
 import discord
 import loguru
 
+default_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
 
-async def solve_captcha(logger: 'loguru.Logger', data):
+
+async def solve_captcha(logger: 'loguru.Logger',
+                        data,
+                        user_agent: str = None):
     logger.info(f'captcha data: {data}')
-    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
     custom_id = data['d']['custom_id'].lstrip('MJ::iframe::')
+    user_agent = user_agent or default_user_agent
 
     async def ack_captcha_url():
         from aiohttp import ClientSession
@@ -36,12 +40,14 @@ async def solve_captcha(logger: 'loguru.Logger', data):
 
 
 async def solve_turnstile(logger: 'loguru.Logger',
-                          url: str, user_agent: str,
+                          url: str,
+                          user_agent: str = None,
                           user_data_path: str = None,
                           screencast_save_path: str = None,
                           timeout: int = 10):
     import asyncio
     from DrissionPage import ChromiumPage, ChromiumOptions
+    user_agent = user_agent or default_user_agent
     options = (
         ChromiumOptions()
         .auto_port()

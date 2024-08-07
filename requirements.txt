@@ -1,4 +1,6 @@
 DrissionPage
 aiohttp
+fastapi
 git+https://github.com/dolfies/discord.py-self.git@master
 loguru
+uvicorn
