@@ -1,0 +1,4 @@
+DrissionPage
+aiohttp
+git+https://github.com/dolfies/discord.py-self.git@master
+loguru
