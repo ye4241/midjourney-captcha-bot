@@ -2,5 +2,3 @@ DrissionPage
 aiohttp
 git+https://github.com/dolfies/discord.py-self.git@master
 loguru
-mysql-connector-python
-sqlalchemy

@@ -1,3 +1,6 @@
+from loguru import logger
+
+
 async def main():
     import argparse
     parser = argparse.ArgumentParser(description='Midjourney Captcha Bot')
@@ -8,7 +11,7 @@ async def main():
     args = parser.parse_args()
 
     from utils import MidjourneyCaptchaBot
-    bot = MidjourneyCaptchaBot(args.token, args.guild_id, args.channel_id)
+    bot = MidjourneyCaptchaBot(logger, args.token, args.guild_id, args.channel_id)
     await bot.imagine(args.prompt)
 
 

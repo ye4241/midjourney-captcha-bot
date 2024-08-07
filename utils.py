@@ -38,7 +38,8 @@ async def solve_captcha(logger: 'loguru.Logger', data):
 async def solve_turnstile(logger: 'loguru.Logger',
                           url: str, user_agent: str,
                           user_data_path: str = None,
-                          screencast_save_path: str = None):
+                          screencast_save_path: str = None,
+                          timeout: int = 10):
     import asyncio
     from DrissionPage import ChromiumPage, ChromiumOptions
     options = (
@@ -56,10 +57,10 @@ async def solve_turnstile(logger: 'loguru.Logger',
     page = ChromiumPage(options)
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
-        page.screencast.set_mode.video_mode()
+        page.screencast.set_mode.frugal_imgs_mode()
         page.screencast.start()
     page.get(url)
-    logger.debug('waiting for turnstile')
+    logger.debug('waiting for cloudflare turnstile')
     await asyncio.sleep(2)
     divs = page.eles('tag:div')
     iframe = None
@@ -72,14 +73,14 @@ async def solve_turnstile(logger: 'loguru.Logger',
             if iframe:
                 break
             break
-    body_element = iframe.ele('tag:body', timeout=10).shadow_root
-    logger.debug('waiting for text: Verify you are human')
-    verify_element = body_element.ele("text:Verify you are human", timeout=10)
+    body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
     await asyncio.sleep(1)
-    logger.debug('click verify')
-    verify_element.offset(10, 10).click(by_js=False)
-    logger.debug('waiting for deleted')
-    verify_element.wait.deleted(timeout=10)
+    logger.debug('waiting for "Verify you are human"')
+    verify_element = body_element.ele("text:Verify you are human", timeout=timeout)
+    logger.debug(f'click at offset of text')
+    verify_element.click.at(10, 10)
+    logger.debug('waiting for success')
+    body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout)
     await asyncio.sleep(1)
     if screencast_save_path:
         page.screencast.stop()
@@ -87,9 +88,9 @@ async def solve_turnstile(logger: 'loguru.Logger',
 
 
 class MidjourneyCaptchaBot(discord.Client):
-    def __init__(self, token: str, guild_id: int, channel_id: int):
+    def __init__(self, logger: 'loguru.Logger', token: str, guild_id: int, channel_id: int):
         super().__init__(enable_debug_events=True)
-        self.__logger = loguru.logger
+        self.__logger = logger
         self.__token = token
         self.__guild_id = guild_id
         self.__channel_id = channel_id
