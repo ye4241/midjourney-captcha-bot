@@ -35,8 +35,7 @@ async def solve_captcha(logger: 'loguru.Logger',
     await asyncio.sleep(1)
     captcha_url = await ack_captcha_url()
     logger.info(f'solve captcha: {captcha_url}')
-    await solve_turnstile(logger, captcha_url, user_agent)
-    return True
+    return await solve_turnstile(logger, captcha_url, user_agent)
 
 
 async def solve_turnstile(logger: 'loguru.Logger',
@@ -63,34 +62,40 @@ async def solve_turnstile(logger: 'loguru.Logger',
     page = ChromiumPage(options)
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
-        page.screencast.set_mode.frugal_imgs_mode()
+        page.screencast.set_mode.video_mode()
         page.screencast.start()
-    page.get(url)
-    logger.debug('waiting for cloudflare turnstile')
-    await asyncio.sleep(2)
-    divs = page.eles('tag:div')
-    iframe = None
-    for div in divs:
-        if div.shadow_root:
-            iframe = div.shadow_root.ele(
-                "xpath://iframe[starts-with(@src, 'https://challenges.cloudflare.com/')]",
-                timeout=0
-            )
-            if iframe:
+    solved = False
+    try:
+        page.get(url)
+        logger.info('waiting for cloudflare turnstile')
+        await asyncio.sleep(2)
+        divs = page.eles('tag:div')
+        iframe = None
+        for div in divs:
+            if div.shadow_root:
+                iframe = div.shadow_root.ele(
+                    "xpath://iframe[starts-with(@src, 'https://challenges.cloudflare.com/')]",
+                    timeout=0
+                )
+                if iframe:
+                    break
                 break
-            break
-    body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
-    await asyncio.sleep(1)
-    logger.debug('waiting for "Verify you are human"')
-    verify_element = body_element.ele("text:Verify you are human", timeout=timeout)
-    logger.debug(f'click at offset of text')
-    verify_element.click.at(10, 10)
-    logger.debug('waiting for success')
-    body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout)
-    await asyncio.sleep(1)
+        body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
+        await asyncio.sleep(1)
+        logger.info('waiting for "Verify you are human"')
+        verify_element = body_element.ele("text:Verify you are human", timeout=timeout)
+        logger.info(f'click at offset position of text')
+        verify_element.click.at(10, 10)
+        logger.info('waiting for success')
+        body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
+        await asyncio.sleep(1)
+        solved = True
+    except Exception as e:
+        logger.error(f'error: {e}')
     if screencast_save_path:
         page.screencast.stop()
-    page.close()
+    page.quit()
+    return solved
 
 
 class MidjourneyCaptchaBot(discord.Client):
