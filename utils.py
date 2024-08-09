@@ -1,15 +1,12 @@
 import discord
 import loguru
 
-default_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
 
 
-async def solve_captcha(logger: 'loguru.Logger',
-                        data,
-                        user_agent: str = None):
+async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
     logger.info(f'captcha data: {data}')
     custom_id = data['d']['custom_id'].lstrip('MJ::iframe::')
-    user_agent = user_agent or default_user_agent
 
     async def ack_captcha_url():
         from aiohttp import ClientSession
@@ -38,18 +35,12 @@ async def solve_captcha(logger: 'loguru.Logger',
     if captcha_url is None:
         return False
     logger.debug(f'solve captcha: {captcha_url}')
-    return await solve_turnstile(logger, captcha_url, user_agent)
+    return await solve_turnstile(logger, captcha_url, **kwargs)
 
 
-async def solve_turnstile(logger: 'loguru.Logger',
-                          url: str,
-                          user_agent: str = None,
-                          user_data_path: str = None,
-                          screencast_save_path: str = None,
-                          timeout: int = 10):
+async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     import asyncio
     from DrissionPage import ChromiumPage, ChromiumOptions
-    user_agent = user_agent or default_user_agent
     options = (
         ChromiumOptions()
         .auto_port()
@@ -60,13 +51,19 @@ async def solve_turnstile(logger: 'loguru.Logger',
         .set_argument('--no-sandbox')
         .set_argument('--disable-gpu')
     )
+    browser_path = kwargs.get('browser_path')
+    if browser_path:
+        options.set_browser_path(browser_path)
+    user_data_path = kwargs.get('user_data_path')
     if user_data_path:
         options.set_user_data_path(user_data_path)
     page = ChromiumPage(options)
+    screencast_save_path = kwargs.get('screencast_save_path')
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
         page.screencast.set_mode.frugal_imgs_mode()
         page.screencast.start()
+    timeout = kwargs.get('timeout', 10)
     solved = False
     try:
         page.get(url)
@@ -110,6 +107,7 @@ class MidjourneyCaptchaBot(discord.Client):
         self.__token = token
         self.__guild_id = guild_id
         self.__channel_id = channel_id
+        self.__kwargs = kwargs
 
         import asyncio
         self.__command_name = None
@@ -169,5 +167,5 @@ class MidjourneyCaptchaBot(discord.Client):
         await self.close()
 
     async def __solve_captcha(self, data):
-        self.__command_data = await solve_captcha(self.__logger, data)
+        self.__command_data = await solve_captcha(self.__logger, data, **self.__kwargs)
         self.__command_event.set()

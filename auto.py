@@ -75,6 +75,7 @@ async def main():
     parser.add_argument('--api_secret', type=str, required=True, help='API secret')
     parser.add_argument('--cron', type=str, default='* * * * *', help='Cron expression')
     parser.add_argument('--proxy', type=str, default=None, help='Proxy')
+    parser.add_argument('--browser_path', type=str, default=None, help='Browser path')
     args = parser.parse_args()
 
     await run(**vars(args))
