@@ -65,7 +65,7 @@ async def solve_turnstile(logger: 'loguru.Logger',
     page = ChromiumPage(options)
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
-        page.screencast.set_mode.video_mode()
+        page.screencast.set_mode.frugal_imgs_mode()
         page.screencast.start()
     solved = False
     try:
