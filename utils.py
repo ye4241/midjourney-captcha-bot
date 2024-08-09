@@ -71,7 +71,7 @@ async def solve_turnstile(logger: 'loguru.Logger',
     try:
         page.get(url)
         logger.debug('waiting for cloudflare turnstile')
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         divs = page.eles('tag:div')
         iframe = None
         for div in divs:
@@ -85,10 +85,10 @@ async def solve_turnstile(logger: 'loguru.Logger',
                 break
         body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
         await asyncio.sleep(1)
-        logger.debug('waiting for "Verify you are human"')
-        verify_element = body_element.ele("text:Verify you are human", timeout=timeout)
-        logger.debug(f'click at offset position of text')
-        verify_element.click.at(10, 10)
+        logger.debug('waiting for checkbox')
+        checkbox_element = body_element.ele("xpath://input[@type='checkbox']", timeout=timeout)
+        logger.debug(f'click at offset position of checkbox')
+        checkbox_element.click.at(10, 10)
         logger.debug('waiting for success')
         body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
         await asyncio.sleep(1)
