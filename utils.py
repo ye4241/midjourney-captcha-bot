@@ -25,15 +25,18 @@ async def solve_captcha(logger: 'loguru.Logger',
             logger.info(f'ack captcha: {url}')
             async with session.get(url) as response:
                 result = await response.json()
-                logger.info(f'ack captcha result: {result}')
                 if 'detail' in result:
-                    raise Exception(result['detail'])
+                    logger.error(f'ack captcha error: {result["detail"]}')
+                    return None
 
-            return f'https://editor.midjourney.com/captcha/challenge/index.html?hash={result["hash"]}&token={result["token"]}'
+                logger.info(f'ack captcha result: {result}')
+                return f'https://editor.midjourney.com/captcha/challenge/index.html?hash={result["hash"]}&token={result["token"]}'
 
     import asyncio
     await asyncio.sleep(1)
     captcha_url = await ack_captcha_url()
+    if captcha_url is None:
+        return False
     logger.info(f'solve captcha: {captcha_url}')
     return await solve_turnstile(logger, captcha_url, user_agent)
 
