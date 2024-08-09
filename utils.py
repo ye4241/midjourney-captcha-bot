@@ -159,7 +159,12 @@ class MidjourneyCaptchaBot(discord.Client):
         commands = await channel.application_commands()
         command = next(command for command in commands if command.name == command_name)
         await command(**kwargs)
-        await self.__command_event.wait()
+        import asyncio
+        try:
+            await asyncio.wait_for(self.__command_event.wait(), timeout=120)
+        except asyncio.TimeoutError:
+            self.__logger.error('command timeout')
+            self.__command_data = False
         self.__logger.info('close bot...')
         await self.close()
 
