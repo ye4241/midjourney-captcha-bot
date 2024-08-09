@@ -19,5 +19,5 @@ pip install -r requirements.txt
 ## Run
 
 ```shell
-python auto.py --api_host <API_HOST> --api_secret <API_SECRET>
+python auto.py --api_host <API_HOST> --api_secret <API_SECRET> --proxy <PROXY>
 ```
