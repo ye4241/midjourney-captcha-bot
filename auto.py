@@ -47,17 +47,20 @@ async def hook(api_host: str, api_secret: str):
 
 
 async def run(api_host: str, api_secret: str, cron: str):
+    from datetime import datetime
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
     from apscheduler.triggers.cron import CronTrigger
 
     scheduler = AsyncIOScheduler()
     cron_trigger = CronTrigger.from_crontab(cron)
     scheduler.add_job(
-        hook(api_host, api_secret),
+        hook,
+        args=(api_host, api_secret),
         trigger=cron_trigger,
         id='hook',
         replace_existing=True,
-        max_instances=1
+        max_instances=1,
+        next_run_time=datetime.now()
     )
     scheduler.start()
 
