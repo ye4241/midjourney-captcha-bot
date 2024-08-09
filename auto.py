@@ -35,12 +35,8 @@ async def hook(api_host: str, api_secret: str):
             continue
 
         logger.info(f'enable account: {account_id}')
-        response = await session.put(f'{api_host}/mj/account/{account_id}/update-reconnect', json={
-            "enable": True,
-            "channelId": channel_id,
-            "guildId": guild_id,
-            "userToken": user_token
-        })
+        account['enable'] = True
+        response = await session.put(f'{api_host}/mj/account/{account_id}/update-reconnect', json=account)
         logger.info(f'result: {await response.json()}')
 
     await session.close()
