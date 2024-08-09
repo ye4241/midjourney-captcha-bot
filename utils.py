@@ -43,8 +43,10 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
 async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     browser_proxy = kwargs.get('proxy')
     browser_path = kwargs.get('browser_path')
-    headless = bool(kwargs.get('browser_headless', True))
-    timeout = int(kwargs.get('browser_timeout', 10))
+    headless = kwargs.get('browser_headless')
+    headless = headless.lower() == 'true' if headless else True
+    timeout = kwargs.get('browser_timeout')
+    timeout = int(timeout) if timeout else 10
     user_data_path = kwargs.get('browser_user_data_path')
     screencast_save_path = kwargs.get('browser_screencast_save_path')
 
