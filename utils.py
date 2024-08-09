@@ -9,8 +9,10 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
     custom_id = data['d']['custom_id'].lstrip('MJ::iframe::')
 
     async def ack_captcha_url():
-        from aiohttp import ClientSession
-        async with ClientSession() as session:
+        from aiohttp import ClientSession, TCPConnector
+        connector = TCPConnector(ssl=False)
+        proxy = kwargs.get('proxy')
+        async with ClientSession(connector=connector) as session:
             url = f'https://936929561302675456.discordsays.com/captcha/api/c/{custom_id}/ack?hash=1'
             session.headers.update({
                 'accept': '*/*',
@@ -20,7 +22,7 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
                 'user-agent': user_agent
             })
             logger.debug(f'ack captcha: {url}')
-            async with session.get(url) as response:
+            async with session.get(url, proxy=proxy) as response:
                 result = await response.json()
                 if 'detail' in result:
                     logger.error(f'ack captcha error: {result["detail"]}')
