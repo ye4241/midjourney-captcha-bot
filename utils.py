@@ -53,6 +53,7 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         .headless(headless)
         .incognito(incognito)
         .set_user_agent(user_agent)
+        .set_argument('--guest')
         .set_argument('--no-sandbox')
         .set_argument('--disable-gpu')
     )
