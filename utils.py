@@ -39,26 +39,28 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
 
 
 async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
+    headless = bool(kwargs.get('headless', True))
+    incognito = bool(kwargs.get('incognito', True))
+    browser_path = kwargs.get('browser_path')
+    user_data_path = kwargs.get('user_data_path')
+    screencast_save_path = kwargs.get('screencast_save_path')
+
     import asyncio
     from DrissionPage import ChromiumPage, ChromiumOptions
     options = (
         ChromiumOptions()
         .auto_port()
-        .headless()
-        .incognito(True)
+        .headless(headless)
+        .incognito(incognito)
         .set_user_agent(user_agent)
-        .set_argument('--guest')
         .set_argument('--no-sandbox')
         .set_argument('--disable-gpu')
     )
-    browser_path = kwargs.get('browser_path')
     if browser_path:
         options.set_browser_path(browser_path)
-    user_data_path = kwargs.get('user_data_path')
     if user_data_path:
         options.set_user_data_path(user_data_path)
     page = ChromiumPage(options)
-    screencast_save_path = kwargs.get('screencast_save_path')
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
         page.screencast.set_mode.frugal_imgs_mode()
