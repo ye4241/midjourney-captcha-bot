@@ -1,8 +1,10 @@
 # Midjourney Captcha Bot
 
+## Configuration
+
 ```shell
 # Create a virtual environment
-python3 -m venv venv
+python -m venv venv
 # Activate the virtual environment
 # Linux or macOS
 source venv/bin/activate
@@ -12,6 +14,10 @@ venv\Scripts\activate.bat
 venv\Scripts\activate.ps1
 # Install the required packages
 pip install -r requirements.txt
-# Run
-python main.py
+```
+
+## Run
+
+```shell
+python auto.py
 ```
