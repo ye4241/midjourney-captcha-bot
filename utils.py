@@ -104,8 +104,8 @@ async def solve_turnstile(logger: 'loguru.Logger',
 class MidjourneyCaptchaBot(discord.Client):
     MIDJOURNEY_BOT_ID = 936929561302675456
 
-    def __init__(self, logger: 'loguru.Logger', token: str, guild_id: int, channel_id: int):
-        super().__init__(enable_debug_events=True)
+    def __init__(self, logger: 'loguru.Logger', token: str, guild_id: int, channel_id: int, **kwargs):
+        super().__init__(enable_debug_events=True, **kwargs)
         self.__logger = logger
         self.__token = token
         self.__guild_id = guild_id

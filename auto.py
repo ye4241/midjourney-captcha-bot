@@ -1,4 +1,4 @@
-async def hook(api_host: str, api_secret: str):
+async def hook(api_host: str, api_secret: str, **kwargs):
     from loguru import logger
     from aiohttp import ClientSession
     session = ClientSession()
@@ -28,7 +28,7 @@ async def hook(api_host: str, api_secret: str):
         user_token = account['userToken']
 
         from utils import MidjourneyCaptchaBot
-        bot = MidjourneyCaptchaBot(logger, user_token, int(guild_id), int(channel_id))
+        bot = MidjourneyCaptchaBot(logger, user_token, int(guild_id), int(channel_id), **kwargs)
         solved = await bot.imagine('a cat --relax')
         if not solved:
             logger.error(f'failed to imagine for {account_id}')
@@ -42,16 +42,17 @@ async def hook(api_host: str, api_secret: str):
     await session.close()
 
 
-async def run(api_host: str, api_secret: str, cron: str):
+async def run(**kwargs):
     from datetime import datetime
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
     from apscheduler.triggers.cron import CronTrigger
 
     scheduler = AsyncIOScheduler()
+    cron = kwargs.pop('cron')
     cron_trigger = CronTrigger.from_crontab(cron)
     scheduler.add_job(
         hook,
-        args=(api_host, api_secret),
+        kwargs=kwargs,
         trigger=cron_trigger,
         id='hook',
         replace_existing=True,
@@ -73,9 +74,10 @@ async def main():
     parser.add_argument('--api_host', type=str, required=True, help='API host')
     parser.add_argument('--api_secret', type=str, required=True, help='API secret')
     parser.add_argument('--cron', type=str, default='* * * * *', help='Cron expression')
+    parser.add_argument('--proxy', type=str, default=None, help='Proxy')
     args = parser.parse_args()
 
-    await run(args.api_host, args.api_secret, args.cron)
+    await run(**vars(args))
 
 
 if __name__ == '__main__':
