@@ -99,6 +99,8 @@ async def solve_turnstile(logger: 'loguru.Logger',
 
 
 class MidjourneyCaptchaBot(discord.Client):
+    MIDJOURNEY_BOT_ID = 936929561302675456
+
     def __init__(self, logger: 'loguru.Logger', token: str, guild_id: int, channel_id: int):
         super().__init__(enable_debug_events=True)
         self.__logger = logger
@@ -126,7 +128,19 @@ class MidjourneyCaptchaBot(discord.Client):
         _ = asyncio.create_task(await self.__send_commands(self.__command_name, **self.__command_args))
 
     async def on_message(self, message: discord.Message):
-        self.__logger.info(f'message: {message.author}: {message.content}')
+        if message.author is None or message.author.id != self.MIDJOURNEY_BOT_ID:
+            return
+
+        if message.embeds is not None and len(message.embeds) > 0:
+            embed = message.embeds[0]
+            if embed.title is None or embed.description is None:
+                return
+            embed_title = embed.title
+            embed_description = embed.description
+            self.__logger.info(f'embed: {embed_title}, {embed_description}')
+            if 'Blocked' in embed_title:
+                self.__command_data = False
+                self.__command_event.set()
 
     async def on_socket_raw_receive(self, msg):
         self.__logger.info(f'socket received: {msg}')
