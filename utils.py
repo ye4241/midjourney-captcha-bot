@@ -164,6 +164,5 @@ class MidjourneyCaptchaBot(discord.Client):
         await self.close()
 
     async def __solve_captcha(self, data):
-        if await solve_captcha(self.__logger, data):
-            self.__command_data = True
-            self.__command_event.set()
+        self.__command_data = await solve_captcha(self.__logger, data)
+        self.__command_event.set()
