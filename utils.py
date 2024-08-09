@@ -39,9 +39,10 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
 
 
 async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
-    headless = bool(kwargs.get('headless', True))
-    incognito = bool(kwargs.get('incognito', True))
     browser_path = kwargs.get('browser_path')
+    browser_headless = bool(kwargs.get('browser_headless', True))
+    browser_incognito = bool(kwargs.get('browser_incognito', True))
+    browser_timeout = int(kwargs.get('browser_timeout', 10))
     user_data_path = kwargs.get('user_data_path')
     screencast_save_path = kwargs.get('screencast_save_path')
 
@@ -50,8 +51,8 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     options = (
         ChromiumOptions()
         .auto_port()
-        .headless(headless)
-        .incognito(incognito)
+        .headless(browser_headless)
+        .incognito(browser_incognito)
         .set_user_agent(user_agent)
         .set_argument('--guest')
         .set_argument('--no-sandbox')
@@ -66,7 +67,6 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         page.screencast.set_save_path(screencast_save_path)
         page.screencast.set_mode.frugal_imgs_mode()
         page.screencast.start()
-    timeout = kwargs.get('timeout', 10)
     solved = False
     try:
         page.get(url)
@@ -83,14 +83,15 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
                 if iframe:
                     break
                 break
-        body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
+        body_element = iframe.ele('tag:body', timeout=browser_timeout).shadow_root
         await asyncio.sleep(1)
         logger.debug('waiting for checkbox')
-        checkbox_element = body_element.ele("xpath://input[@type='checkbox']", timeout=timeout)
+        checkbox_element = body_element.ele("xpath://input[@type='checkbox']", timeout=browser_timeout)
         logger.debug(f'click at offset position of checkbox')
         checkbox_element.click.at(10, 10)
         logger.debug('waiting for success')
-        body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
+        body_element.ele('xpath://div[@id="success"]', timeout=browser_timeout).wait.displayed(timeout=browser_timeout,
+                                                                                               raise_err=True)
         await asyncio.sleep(1)
         solved = True
     except Exception as e:
