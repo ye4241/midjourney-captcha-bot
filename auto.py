@@ -76,7 +76,11 @@ async def main():
     parser.add_argument('--cron', type=str, default='* * * * *', help='Cron expression')
     parser.add_argument('--proxy', type=str, default=None, help='Proxy')
     parser.add_argument('--browser_path', type=str, default=None, help='Browser path')
-    parser.add_argument('--browser_headless', type=bool, default=True, help='Browser headless')
+    parser.add_argument('--browser_headless', type=str, choices=['true', 'false'], default='true',
+                        help='Browser headless')
+    parser.add_argument('--browser_timeout', type=int, default=None, help='Browser timeout')
+    parser.add_argument('--browser_user_data_path', type=str, default=None, help='Browser User data path')
+    parser.add_argument('--browser_screencast_save_path', type=str, default=None, help='Browser Screencast save path')
 
     args = parser.parse_args()
     await run(**vars(args))
