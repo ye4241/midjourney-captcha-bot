@@ -44,6 +44,7 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     browser_path = kwargs.get('browser_path')
     browser_headless = bool(kwargs.get('browser_headless', True))
     browser_incognito = bool(kwargs.get('browser_incognito', True))
+    browser_proxy = kwargs.get('browser_proxy')
     browser_timeout = int(kwargs.get('browser_timeout', 10))
     user_data_path = kwargs.get('user_data_path')
     screencast_save_path = kwargs.get('screencast_save_path')
@@ -62,6 +63,8 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     )
     if browser_path:
         options.set_browser_path(browser_path)
+    if browser_proxy:
+        options.set_proxy(browser_proxy)
     if user_data_path:
         options.set_user_data_path(user_data_path)
     page = ChromiumPage(options)
