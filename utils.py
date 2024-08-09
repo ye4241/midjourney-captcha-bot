@@ -22,14 +22,14 @@ async def solve_captcha(logger: 'loguru.Logger',
                 'referer': 'https://936929561302675456.discordsays.com/captcha/index.html',
                 'user-agent': user_agent
             })
-            logger.info(f'ack captcha: {url}')
+            logger.debug(f'ack captcha: {url}')
             async with session.get(url) as response:
                 result = await response.json()
                 if 'detail' in result:
                     logger.error(f'ack captcha error: {result["detail"]}')
                     return None
 
-                logger.info(f'ack captcha result: {result}')
+                logger.debug(f'ack captcha result: {result}')
                 return f'https://editor.midjourney.com/captcha/challenge/index.html?hash={result["hash"]}&token={result["token"]}'
 
     import asyncio
@@ -37,7 +37,7 @@ async def solve_captcha(logger: 'loguru.Logger',
     captcha_url = await ack_captcha_url()
     if captcha_url is None:
         return False
-    logger.info(f'solve captcha: {captcha_url}')
+    logger.debug(f'solve captcha: {captcha_url}')
     return await solve_turnstile(logger, captcha_url, user_agent)
 
 
@@ -70,7 +70,7 @@ async def solve_turnstile(logger: 'loguru.Logger',
     solved = False
     try:
         page.get(url)
-        logger.info('waiting for cloudflare turnstile')
+        logger.debug('waiting for cloudflare turnstile')
         await asyncio.sleep(2)
         divs = page.eles('tag:div')
         iframe = None
@@ -85,11 +85,11 @@ async def solve_turnstile(logger: 'loguru.Logger',
                 break
         body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
         await asyncio.sleep(1)
-        logger.info('waiting for "Verify you are human"')
+        logger.debug('waiting for "Verify you are human"')
         verify_element = body_element.ele("text:Verify you are human", timeout=timeout)
-        logger.info(f'click at offset position of text')
+        logger.debug(f'click at offset position of text')
         verify_element.click.at(10, 10)
-        logger.info('waiting for success')
+        logger.debug('waiting for success')
         body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
         await asyncio.sleep(1)
         solved = True
