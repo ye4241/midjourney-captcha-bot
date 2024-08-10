@@ -15,6 +15,8 @@ async def hook(api_host: str, api_secret: str, **kwargs):
     accounts = (await response.json())['content']
     logger.info(f'count: {len(accounts)}')
 
+    delay = kwargs.pop('delay')
+
     for account in accounts:
         account_id = account['id']
         disable_reason = account['properties']['disabledReason']
@@ -38,6 +40,8 @@ async def hook(api_host: str, api_secret: str, **kwargs):
         account['enable'] = True
         response = await session.put(f'{api_host}/mj/account/{account_id}/update-reconnect', json=account)
         logger.info(f'result: {await response.json()}')
+
+        await asyncio.sleep(delay)
 
     await session.close()
 
@@ -73,12 +77,13 @@ async def main():
     parser = argparse.ArgumentParser(description='Midjourney Captcha Bot')
     parser.add_argument('--api_host', type=str, required=True, help='API host')
     parser.add_argument('--api_secret', type=str, required=True, help='API secret')
-    parser.add_argument('--cron', type=str, default='* * * * *', help='Cron expression')
+    parser.add_argument('--cron', type=str, default='*/10 * * * *', help='Cron expression')
+    parser.add_argument('--delay', type=int, default=5, help='Delay')
     parser.add_argument('--proxy', type=str, default=None, help='Proxy')
     parser.add_argument('--browser_path', type=str, default=None, help='Browser path')
     parser.add_argument('--browser_headless', type=str, choices=['true', 'false'], default='true',
                         help='Browser headless')
-    parser.add_argument('--browser_timeout', type=int, default=None, help='Browser timeout')
+    parser.add_argument('--browser_timeout', type=int, default=10, help='Browser timeout')
     parser.add_argument('--browser_user_data_path', type=str, default=None, help='Browser User data path')
     parser.add_argument('--browser_screencast_save_path', type=str, default=None, help='Browser Screencast save path')
 

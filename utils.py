@@ -56,7 +56,7 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         ChromiumOptions()
         .auto_port()
         .headless(headless)
-        .incognito()
+        .incognito(True)
         .set_user_agent(user_agent)
         .set_argument('--guest')
         .set_argument('--no-sandbox')
