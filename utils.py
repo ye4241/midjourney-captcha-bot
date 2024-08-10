@@ -51,6 +51,7 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     timeout = int(timeout) if timeout else 10
     user_data_path = kwargs.get('browser_user_data_path')
     screencast_save_path = kwargs.get('browser_screencast_save_path')
+    yescaptcha_assistant_path = kwargs.get('yescaptcha_assistant_path', 'yescaptcha-assistant')
 
     from DrissionPage import ChromiumPage, ChromiumOptions
     options = (
@@ -69,6 +70,11 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         options.set_proxy(browser_proxy)
     if user_data_path:
         options.set_user_data_path(user_data_path)
+    import os
+    use_yescaptcha_assistant = os.path.exists(yescaptcha_assistant_path)
+    if use_yescaptcha_assistant:
+        logger.warning('using yescaptcha assistant, please make sure api key is set')
+        options.add_extension(yescaptcha_assistant_path)
     logger.info(f'browser options: {options.__dict__}')
     page = ChromiumPage(options)
     if screencast_save_path:
@@ -93,11 +99,15 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
                 break
         body_element = iframe.ele('tag:body', timeout=timeout).shadow_root
         await asyncio.sleep(1)
-        logger.debug('waiting for checkbox')
+        if use_yescaptcha_assistant:
+            logger.debug('waiting for yescaptcha assistant to solve')
+            await asyncio.sleep(2)
+        logger.debug('checking for checkbox')
         checkbox_element = body_element.ele("xpath://input[@type='checkbox']", timeout=timeout)
-        logger.debug(f'click at offset position of checkbox')
-        checkbox_element.click.at(10, 10)
-        logger.debug('waiting for success')
+        if checkbox_element:
+            logger.debug(f'click at offset position of checkbox')
+            checkbox_element.click.at(10, 10)
+        logger.debug('checking for success')
         body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
         await asyncio.sleep(1)
         solved = True
