@@ -107,6 +107,8 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         if checkbox_element:
             logger.debug(f'click at offset position of checkbox')
             checkbox_element.click.at(10, 10)
+        else:
+            logger.warning('no checkbox found')
         logger.debug('checking for success')
         body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
         await asyncio.sleep(1)
