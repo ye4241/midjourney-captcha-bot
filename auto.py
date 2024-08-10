@@ -15,7 +15,8 @@ async def hook(api_host: str, api_secret: str, **kwargs):
     accounts = (await response.json())['content']
     logger.info(f'count: {len(accounts)}')
 
-    delay = kwargs.pop('delay')
+    delay = kwargs.pop('delay', 10)
+    prompt = kwargs.pop('prompt', 'a cat --relax')
 
     for account in accounts:
         account_id = account['id']
@@ -31,7 +32,7 @@ async def hook(api_host: str, api_secret: str, **kwargs):
 
         from utils import MidjourneyCaptchaBot
         bot = MidjourneyCaptchaBot(logger, user_token, int(guild_id), int(channel_id), **kwargs)
-        solved = await bot.imagine('a cat --relax')
+        solved = await bot.imagine(prompt)
         if not solved:
             logger.error(f'failed to imagine for {account_id}')
             continue
@@ -78,7 +79,8 @@ async def main():
     parser.add_argument('--api_host', type=str, required=True, help='API host')
     parser.add_argument('--api_secret', type=str, required=True, help='API secret')
     parser.add_argument('--cron', type=str, default='*/10 * * * *', help='Cron expression')
-    parser.add_argument('--delay', type=int, default=5, help='Delay')
+    parser.add_argument('--prompt', type=str, default='a cat --relax', help='Prompt')
+    parser.add_argument('--delay', type=int, default=10, help='Delay')
     parser.add_argument('--proxy', type=str, default=None, help='Proxy')
     parser.add_argument('--browser_path', type=str, default=None, help='Browser path')
     parser.add_argument('--browser_headless', type=str, choices=['true', 'false'], default='true',
