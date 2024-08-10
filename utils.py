@@ -125,11 +125,13 @@ class MidjourneyCaptchaBot(discord.Client):
         self.__command_args = {}
         self.__command_event = asyncio.Event()
         self.__command_data = None
+        self.__command_timeout = None
 
-    async def imagine(self, prompt):
+    async def imagine(self, prompt, timeout=120):
         self.__logger.info('imagine prompt...')
         self.__command_name = 'imagine'
         self.__command_args = {'prompt': prompt}
+        self.__command_timeout = timeout
         await self.login(self.__token)
         await self.connect()
         return self.__command_data
@@ -174,7 +176,7 @@ class MidjourneyCaptchaBot(discord.Client):
         await command(**kwargs)
         import asyncio
         try:
-            await asyncio.wait_for(self.__command_event.wait(), timeout=120)
+            await asyncio.wait_for(self.__command_event.wait(), timeout=self.__command_timeout)
         except asyncio.TimeoutError:
             self.__logger.error('command timeout')
             self.__command_data = False
