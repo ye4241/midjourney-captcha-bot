@@ -42,6 +42,7 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
 
 async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     import asyncio
+    import os
 
     browser_proxy = kwargs.get('proxy')
     browser_path = kwargs.get('browser_path')
@@ -57,12 +58,9 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     options = (
         ChromiumOptions()
         .auto_port()
-        .headless(headless)
         .incognito(True)
+        .headless(headless)
         .set_user_agent(user_agent)
-        .set_argument('--guest')
-        .set_argument('--no-sandbox')
-        .set_argument('--disable-gpu')
     )
     if browser_path:
         options.set_browser_path(browser_path)
@@ -70,12 +68,11 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         options.set_proxy(browser_proxy)
     if user_data_path:
         options.set_user_data_path(user_data_path)
-    import os
     use_yescaptcha_assistant = os.path.exists(yescaptcha_assistant_path)
     if use_yescaptcha_assistant:
         logger.warning('using yescaptcha assistant, please make sure api key is set')
         options.add_extension(yescaptcha_assistant_path)
-    logger.info(f'browser options: {options.__dict__}')
+    logger.debug(f'browser options: {options.__dict__}')
     page = ChromiumPage(options)
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
@@ -102,14 +99,13 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         if use_yescaptcha_assistant:
             logger.debug('waiting for yescaptcha assistant to solve')
             await asyncio.sleep(2)
-        logger.debug('checking for checkbox')
         checkbox_element = body_element.ele("xpath://input[@type='checkbox']", timeout=timeout)
         if checkbox_element:
             logger.debug(f'click at offset position of checkbox')
             checkbox_element.click.at(10, 10)
         else:
             logger.warning('no checkbox found')
-        logger.debug('checking for success')
+        logger.info('checking for success')
         body_element.ele('xpath://div[@id="success"]', timeout=timeout).wait.displayed(timeout=timeout, raise_err=True)
         await asyncio.sleep(1)
         solved = True
