@@ -92,6 +92,7 @@ async def main():
     parser.add_argument('--browser_screencast_save_path', type=str, default=None, help='Browser Screencast save path')
 
     args = parser.parse_args()
+    args.browser_headless = True if args.browser_headless == 'true' else False
     await run(**vars(args))
 
 

@@ -46,8 +46,8 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
 
     browser_proxy = kwargs.get('proxy')
     browser_path = kwargs.get('browser_path')
-    headless = kwargs.get('browser_headless')
-    headless = headless.lower() == 'true' if headless else True
+    headless = kwargs.get('browser_headless', True)
+    incognito = kwargs.get('browser_incognito', True)
     timeout = kwargs.get('browser_timeout')
     timeout = int(timeout) if timeout else 10
     user_data_path = kwargs.get('browser_user_data_path')
@@ -58,9 +58,11 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     options = (
         ChromiumOptions()
         .auto_port()
-        .incognito(True)
+        .incognito(incognito)
         .headless(headless)
         .set_user_agent(user_agent)
+        .set_argument('--no-sandbox')
+        .set_argument('--disable-gpu')
     )
     if browser_path:
         options.set_browser_path(browser_path)
@@ -74,6 +76,13 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         options.add_extension(yescaptcha_assistant_path)
     logger.debug(f'browser options: {options.__dict__}')
     page = ChromiumPage(options)
+    if use_yescaptcha_assistant and incognito:
+        page.get('chrome://extensions/?id=gacfihmgcfkkcnkfoomcplhpekkcjlib')
+        (page.ele('tag:extensions-manager').shadow_root
+         .ele('tag:extensions-detail-view').shadow_root
+         .ele('xpath://extensions-toggle-row[@id="allow-incognito"]').shadow_root
+         .ele('tag:cr-toggle')
+         .click())
     if screencast_save_path:
         page.screencast.set_save_path(screencast_save_path)
         page.screencast.set_mode.frugal_imgs_mode()
@@ -88,7 +97,7 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         for div in divs:
             if div.shadow_root:
                 iframe = div.shadow_root.ele(
-                    "xpath://iframe[starts-with(@src, 'https://challenges.cloudflare.com/')]",
+                    'xpath://iframe[starts-with(@src, "https://challenges.cloudflare.com/")]',
                     timeout=0
                 )
                 if iframe:
@@ -98,8 +107,10 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
         await asyncio.sleep(1)
         if use_yescaptcha_assistant:
             logger.debug('waiting for yescaptcha assistant to solve')
-            await asyncio.sleep(2)
-        checkbox_element = body_element.ele("xpath://input[@type='checkbox']", timeout=timeout)
+        checkbox_element = body_element.ele(
+            'xpath://input[@type="checkbox"]',
+            timeout=3 if use_yescaptcha_assistant else timeout
+        )
         if checkbox_element:
             logger.debug(f'click at offset position of checkbox')
             checkbox_element.click.at(10, 10)
