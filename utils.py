@@ -41,6 +41,8 @@ async def solve_captcha(logger: 'loguru.Logger', data, **kwargs):
 
 
 async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
+    import asyncio
+
     browser_proxy = kwargs.get('proxy')
     browser_path = kwargs.get('browser_path')
     headless = kwargs.get('browser_headless')
@@ -50,7 +52,6 @@ async def solve_turnstile(logger: 'loguru.Logger', url: str, **kwargs):
     user_data_path = kwargs.get('browser_user_data_path')
     screencast_save_path = kwargs.get('browser_screencast_save_path')
 
-    import asyncio
     from DrissionPage import ChromiumPage, ChromiumOptions
     options = (
         ChromiumOptions()
@@ -141,7 +142,10 @@ class MidjourneyCaptchaBot(discord.Client):
     async def on_message(self, message: discord.Message):
         if message.author is None or message.author.id != self.MIDJOURNEY_BOT_ID:
             return
-
+        if message.channel is None or message.channel.id != self.__channel_id:
+            return
+        if message.guild is None or message.guild.id != self.__guild_id:
+            return
         if message.embeds is not None and len(message.embeds) > 0:
             embed = message.embeds[0]
             if embed.title is None or embed.description is None:
@@ -154,12 +158,13 @@ class MidjourneyCaptchaBot(discord.Client):
                 self.__command_event.set()
 
     async def on_socket_raw_receive(self, msg):
-        self.__logger.info(f'socket received: {msg}')
         import json
         data = json.loads(msg)
-        if (data['t'] == 'INTERACTION_IFRAME_MODAL_CREATE' and '/captcha/' in data['d']['iframe_path']):
-            import asyncio
-            _ = asyncio.create_task(self.__solve_captcha(data))
+        if data['t'] == 'INTERACTION_IFRAME_MODAL_CREATE':
+            self.__logger.info(f'interaction iframe modal create: {data}')
+            if '/captcha/' in data['d']['iframe_path']:
+                import asyncio
+                _ = asyncio.create_task(self.__solve_captcha(data))
 
     async def __send_commands(self, command_name, **kwargs):
         self.__logger.info(f'send {command_name} commands, {kwargs}')
