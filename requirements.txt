@@ -1,3 +1,4 @@
+2captcha-python
 DrissionPage
 aiohttp
 apscheduler

@@ -31,8 +31,9 @@ async def hook(api_host: str, api_secret: str, **kwargs):
         channel_id = int(account['channelId'])
         user_token = account['userToken']
 
-        from utils import MidjourneyCaptchaBot
-        bot = MidjourneyCaptchaBot(logger, user_token, guild_id, channel_id, **kwargs)
+        from utils import MidjourneyBot, BrowserCaptchaSolver
+        solver = BrowserCaptchaSolver(logger, **kwargs)
+        bot = MidjourneyBot(logger, user_token, guild_id, channel_id, solver, **kwargs)
         solved = await bot.imagine(imagine_prompt, imagine_timeout)
         if not solved:
             logger.error(f'failed to imagine for {account_id}')

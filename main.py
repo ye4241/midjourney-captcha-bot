@@ -10,8 +10,8 @@ async def main():
     parser.add_argument('--prompt', type=str, default='a cat --relax', help='Imagine prompt')
     args = parser.parse_args()
 
-    from utils import MidjourneyCaptchaBot
-    bot = MidjourneyCaptchaBot(logger, args.token, args.guild_id, args.channel_id)
+    from utils import MidjourneyBot
+    bot = MidjourneyBot(logger, args.token, args.guild_id, args.channel_id)
     await bot.imagine(args.prompt)
 
 
