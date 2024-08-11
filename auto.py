@@ -91,6 +91,8 @@ async def main():
     parser.add_argument('--browser_timeout', type=int, default=10, help='Browser timeout')
     parser.add_argument('--browser_user_data_path', type=str, default=None, help='Browser User data path')
     parser.add_argument('--browser_screencast_save_path', type=str, default=None, help='Browser Screencast save path')
+    parser.add_argument('--browser_yescaptcha_path', type=str, default='yescaptcha-assistant',
+                        help='Browser YesCaptcha path')
 
     args = parser.parse_args()
     args.browser_headless = True if args.browser_headless == 'true' else False

@@ -58,7 +58,7 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
         self.__timeout = self._kwargs.get('browser_timeout', 10)
         self.__user_data_path = self._kwargs.get('browser_user_data_path')
         self.__screencast_save_path = self._kwargs.get('browser_screencast_save_path')
-        self.__yescaptcha_assistant_path = self._kwargs.get('yescaptcha_assistant_path', 'yescaptcha-assistant')
+        self.__yescaptcha_path = self._kwargs.get('browser_yescaptcha_path', 'yescaptcha-assistant')
 
     async def solve_turnstile(self, url: str) -> bool:
         import asyncio
@@ -80,14 +80,14 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
             options.set_proxy(self.__browser_proxy)
         if self.__user_data_path:
             options.set_user_data_path(self.__user_data_path)
-        use_yescaptcha_assistant = os.path.exists(self.__yescaptcha_assistant_path)
+        use_yescaptcha_assistant = self.__yescaptcha_path and os.path.exists(self.__yescaptcha_path)
         if use_yescaptcha_assistant:
-            self._logger.warning('using yescaptcha assistant, please make sure api key is set')
-            options.add_extension(self.__yescaptcha_assistant_path)
+            self._logger.warning('using yescaptcha, please make sure api key is set')
+            options.add_extension(self.__yescaptcha_path)
         self._logger.debug(f'browser options: {options.__dict__}')
         page = ChromiumPage(options)
         if use_yescaptcha_assistant and self.__incognito:
-            self._logger.debug('enable yescaptcha assistant in incognito mode')
+            self._logger.debug('enable yescaptcha in incognito mode')
             page.get('chrome://extensions/?id=gacfihmgcfkkcnkfoomcplhpekkcjlib')
             (page.ele('tag:extensions-manager').shadow_root
              .ele('tag:extensions-detail-view').shadow_root
@@ -123,8 +123,14 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
                 timeout=3 if use_yescaptcha_assistant else self.__timeout
             )
             if checkbox_element:
+                import random
                 self._logger.debug(f'click at offset position of checkbox')
-                checkbox_element.click.at(10, 10)
+                width, height = checkbox_element.rect.size
+                border = 2
+                offset_x, offset_y = random.randint(border, int(width - border)), random.randint(border,
+                                                                                                 int(height - border))
+                page.actions.move_to(checkbox_element, offset_x, offset_y)
+                checkbox_element.click.at(offset_x, offset_y)
             else:
                 self._logger.warning('checkbox not found')
             self._logger.info('waiting for success')
