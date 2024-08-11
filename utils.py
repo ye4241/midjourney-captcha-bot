@@ -102,7 +102,7 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
         try:
             page.get(url)
             self._logger.debug('waiting for cloudflare turnstile')
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
             divs = page.eles('tag:div')
             iframe = None
             for div in divs:
@@ -117,7 +117,7 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
             body_element = iframe.ele('tag:body', timeout=self.__timeout).shadow_root
             await asyncio.sleep(1)
             if use_yescaptcha_assistant:
-                self._logger.debug('waiting for yescaptcha assistant to solve')
+                self._logger.debug('waiting for yescaptcha to solve')
             checkbox_element = body_element.ele(
                 'xpath://input[@type="checkbox"]',
                 timeout=3 if use_yescaptcha_assistant else self.__timeout
@@ -126,14 +126,17 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
                 self._logger.debug(f'click at offset position of checkbox')
                 checkbox_element.click.at(10, 10)
             else:
-                self._logger.warning('no checkbox found')
-            self._logger.info('checking for success')
-            body_element.ele(
+                self._logger.warning('checkbox not found')
+            self._logger.info('waiting for success')
+            solved = body_element.ele(
                 'xpath://div[@id="success"]',
                 timeout=self.__timeout
-            ).wait.displayed(timeout=self.__timeout, raise_err=True)
+            ).wait.displayed(timeout=self.__timeout)
+            if not solved:
+                self._logger.error('success not found')
+            else:
+                self._logger.info('success')
             await asyncio.sleep(1)
-            solved = True
         except Exception as e:
             self._logger.error(f'error: {e}')
         if self.__screencast_save_path:
