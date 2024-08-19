@@ -203,7 +203,7 @@ class MidjourneyBot(discord.Client):
             embed_title = embed.title
             embed_description = embed.description
             self.__logger.info(f'embed: {embed_title}, {embed_description}')
-            if 'Blocked' in embed_title:
+            if 'You are blocked.' in embed_title or 'Subscription paused' in embed_title or 'Subscription required' in embed_title or 'Pending mod message' in embed_title:
                 self.__command_data = False
                 self.__command_event.set()
 
