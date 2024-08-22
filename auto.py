@@ -21,7 +21,7 @@ async def hook(api_host: str, api_secret: str, **kwargs):
 
     for account in accounts:
         account_id = account['id']
-        disable_reason = account.get('properties').get('disabledReason')
+        disable_reason = account.get('properties', {}).get('disabledReason', '')
         if '/captcha/' not in disable_reason:
             logger.info(f'skip account: {account_id}, reason: {disable_reason}')
             continue
