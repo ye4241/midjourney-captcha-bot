@@ -23,7 +23,7 @@ async def run(**kwargs):
 
         from utils import BrowserCaptchaSolver
         solver = BrowserCaptchaSolver(logger, **kwargs)
-        result = solver.solve_turnstile(url)
+        result = await solver.solve_turnstile(url)
         if not result:
             raise HTTPException(status_code=500, detail='failed to solve')
 
