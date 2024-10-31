@@ -100,7 +100,9 @@ class BrowserCaptchaSolver(BaseCaptchaSolver):
             page.screencast.start()
         solved = False
         try:
-            page.get(url)
+            self._logger.debug(f'get url: {url}')
+            await asyncio.sleep(1)
+            page.get(url, retry=3)
             self._logger.debug('waiting for cloudflare turnstile')
             await asyncio.sleep(2)
             divs = page.eles('tag:div')
