@@ -1,7 +1,7 @@
 async def hook(api_host: str, api_secret: str, **kwargs):
     from loguru import logger
-    from aiohttp import ClientSession
-    session = ClientSession()
+    from aiohttp import ClientSession, TCPConnector
+    session = ClientSession(connector=TCPConnector(ssl=False))
     session.headers.update({
         'mj-api-secret': api_secret
     })
