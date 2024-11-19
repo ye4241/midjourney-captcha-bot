@@ -1,6 +1,6 @@
 # Midjourney Captcha Bot
 
-![中文](./README.zh-CN.md)
+[中文](./README.zh-CN.md)
 
 ## Configuration
 
