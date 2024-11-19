@@ -1,5 +1,7 @@
 # Midjourney Captcha Bot
 
+自动解决 [midjourney-proxy](https://github.com/litter-coder/midjourney-proxy-plus) 的验证码的机器人;
+
 ## 配置
 
 ```shell
