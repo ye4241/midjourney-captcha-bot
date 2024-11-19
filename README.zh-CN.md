@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ## Run
 
 ```shell
-python auto.py
+python server.py
 ```
 
 ## YesCaptcha(可选步骤)

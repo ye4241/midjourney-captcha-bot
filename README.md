@@ -23,7 +23,7 @@ pip install -r requirements.txt
 ## Run
 
 ```shell
-python auto.py
+python server.py
 ```
 
 ## YesCaptcha(optional)

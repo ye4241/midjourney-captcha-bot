@@ -1,9 +1,6 @@
 2captcha-python
 DrissionPage
 aiohttp
-apscheduler
 fastapi
-git+https://github.com/dolfies/discord.py-self.git@master
 loguru
-pyinstaller
 uvicorn
