@@ -29,7 +29,6 @@ python server.py
 ## YesCaptcha(optional)
 
 1. Register [YesCaptcha](https://yescaptcha.com/i/lSoGCH) (<- affiliate link);
-2.
-Download [Extension Zip](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/25722881/YesCaptcha#%EF%BC%88%E4%BA%8C%EF%BC%89%E3%80%81%E4%B8%8B%E8%BD%BDChrome%E5%AE%89%E8%A3%85%E5%8C%85%E8%87%AA%E5%8A%A9%E5%AE%89%E8%A3%85);
+2. Download [Extension Zip](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/25722881/YesCaptcha#%EF%BC%88%E4%BA%8C%EF%BC%89%E3%80%81%E4%B8%8B%E8%BD%BDChrome%E5%AE%89%E8%A3%85%E5%8C%85%E8%87%AA%E5%8A%A9%E5%AE%89%E8%A3%85);
 3. UniZip the extension into `yescaptcha-assistant` folder;
 4. Config the `config.js` file with `clientKey`.
