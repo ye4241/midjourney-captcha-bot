@@ -1,6 +1,8 @@
 2captcha-python
 DrissionPage
-aiohttp
 fastapi
+httpx
 loguru
+playwright
+tenacity
 uvicorn

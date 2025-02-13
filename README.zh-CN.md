@@ -18,15 +18,15 @@ venv\Scripts\activate.ps1
 pip install -r requirements.txt
 ```
 
-## Run
+## 搭配 Playwright 和 YesCaptcha / 2Captcha 运行
 
-```shell
-python server.py
-```
-
-## YesCaptcha(可选步骤)
-
-1. 注册 [YesCaptcha](https://yescaptcha.com/i/lSoGCH) (<- 推广链接);
-2. 下载 [Extension Zip](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/25722881/YesCaptcha#%EF%BC%88%E4%BA%8C%EF%BC%89%E3%80%81%E4%B8%8B%E8%BD%BDChrome%E5%AE%89%E8%A3%85%E5%8C%85%E8%87%AA%E5%8A%A9%E5%AE%89%E8%A3%85);
-3. 解压插件到 `yescaptcha-assistant` 目录;
-4. 配置 `config.js` 文件中的 `clientKey`.
+1. 注册 [YesCaptcha](https://yescaptcha.com/i/lSoGCH) 或 [2Captcha](https://2captcha.com?from=11867999)；
+2. 复制 `Client Key` 或者 `API Key`，如 `3c21....3221`；
+3. 运行以下命令启动服务器:
+    ```shell
+    # YesCaptcha
+    python server.py --solver-type=playwright --yescaptcha-api-key=3c21....3221
+    # 2Captcha
+    python server.py --solver-type=playwright --2captcha-api-key=3c21....3221
+    ```
+4. 更多参数, 运行 `python server.py --help`；

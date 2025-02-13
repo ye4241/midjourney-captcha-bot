@@ -1,6 +1,5 @@
 async def run(**kwargs):
     from fastapi import FastAPI, Request, HTTPException
-    from loguru import logger
 
     app = FastAPI()
 
@@ -21,8 +20,7 @@ async def run(**kwargs):
         if not urlparse(url).scheme:
             raise HTTPException(status_code=400, detail='invalid url')
 
-        from utils import BrowserCaptchaSolver
-        solver = BrowserCaptchaSolver(logger, **kwargs)
+        solver = kwargs['solver']
         result = await solver.solve_turnstile(url)
         if not result:
             raise HTTPException(status_code=500, detail='failed to solve')
@@ -36,23 +34,12 @@ async def run(**kwargs):
 
 
 async def main():
-    import argparse
-    parser = argparse.ArgumentParser(description='Midjourney Captcha Bot')
+    from utils import build_parser, parse_args
+    parser = build_parser()
     parser.add_argument('--host', type=str, default='0.0.0.0')
     parser.add_argument('--port', type=int, default=8000)
-    parser.add_argument('--proxy', type=str, default=None, help='Proxy')
-    parser.add_argument('--browser_path', type=str, default=None, help='Browser path')
-    parser.add_argument('--browser_headless', type=str, choices=['true', 'false'], default='true',
-                        help='Browser headless')
-    parser.add_argument('--browser_timeout', type=int, default=10, help='Browser timeout')
-    parser.add_argument('--browser_user_data_path', type=str, default=None, help='Browser User data path')
-    parser.add_argument('--browser_screencast_save_path', type=str, default=None, help='Browser Screencast save path')
-    parser.add_argument('--browser_yescaptcha_path', type=str, default='yescaptcha-assistant',
-                        help='Browser YesCaptcha path')
-
-    args = parser.parse_args()
-    args.browser_headless = True if args.browser_headless == 'true' else False
-    await run(**vars(args))
+    args = parse_args(parser)
+    await run(**args)
 
 
 if __name__ == '__main__':

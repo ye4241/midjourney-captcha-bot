@@ -166,3 +166,4 @@ cython_debug/
 archives/
 turnstile/
 yescaptcha-assistant/
+tests.py
