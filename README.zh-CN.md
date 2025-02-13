@@ -16,6 +16,8 @@ venv\Scripts\activate.bat
 venv\Scripts\activate.ps1
 # 安装所需的包
 pip install -r requirements.txt
+# 安装 Playwright
+playwright install
 ```
 
 ## 搭配 Playwright 和 YesCaptcha / 2Captcha 运行
