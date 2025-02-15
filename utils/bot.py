@@ -1,6 +1,5 @@
 import discord
 
-
 class MidjourneyBot(discord.Client):
     MIDJOURNEY_BOT_ID = 936929561302675456
     import loguru

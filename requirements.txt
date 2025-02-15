@@ -1,6 +1,6 @@
-2captcha-python
 DrissionPage
 fastapi
+git+https://github.com/dolfies/discord.py-self.git#egg=discord.py-self
 httpx
 loguru
 playwright
