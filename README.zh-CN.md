@@ -14,7 +14,7 @@ source venv/bin/activate
 venv\Scripts\activate.bat
 # Windows PowerShell
 venv\Scripts\activate.ps1
-# 安装所需的包
+# 安装所需的包，建议开全局代理后再安装，不然会很慢甚至失败
 pip install -r requirements.txt
 # 安装 Playwright
 playwright install
@@ -27,8 +27,8 @@ playwright install
 3. 运行以下命令启动服务器:
     ```shell
     # YesCaptcha
-    python server.py --solver-type=playwright --yescaptcha-api-key=3c21....3221
+    python server.py --solver-type=playwright --yescaptcha-key=3c21....3221
     # 2Captcha
-    python server.py --solver-type=playwright --2captcha-api-key=3c21....3221
+    python server.py --solver-type=playwright --2captcha-key=3c21....3221
     ```
 4. 更多参数, 运行 `python server.py --help`；

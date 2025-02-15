@@ -29,9 +29,9 @@ playwright install
 3. Run the following command to start the server:
     ```shell
     # YesCaptcha
-    python server.py --solver-type=playwright --yescaptcha-api-key=3c21....3221
+    python server.py --solver-type=playwright --yescaptcha-key=3c21....3221
     # 2Captcha
-    python server.py --solver-type=playwright --2captcha-api-key=3c21....3221
+    python server.py --solver-type=playwright --2captcha-key=3c21....3221
     ```
 4. For more args, run `python server.py --help`;
 

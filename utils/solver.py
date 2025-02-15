@@ -25,7 +25,12 @@ class BaseCaptchaSolver:
         self._browser_timeout = self._kwargs.get('browser_timeout', 30)
         self._yescaptcha_key = self._kwargs.get('yescaptcha_key')
         self._twocaptcha_key = self._kwargs.get('twocaptcha_key')
-        self._solver = self._kwargs.get('solver')
+        if self._yescaptcha_key:
+            from utils import YesCaptchaSolver
+            self._captcha_solver = YesCaptchaSolver(self._yescaptcha_key)
+        elif self._twocaptcha_key:
+            from utils import TwoCaptchaSolver
+            self._captcha_solver = TwoCaptchaSolver(self._twocaptcha_key)
 
     async def solve_captcha(self, data):
         self._logger.debug(f'solve captcha: {data}')
@@ -168,7 +173,7 @@ class PlaywrightCaptchaSolver(BaseCaptchaSolver):
         :param browser_timeout:
         """
         super().__init__(**kwargs)
-        if not self._solver:
+        if not self._captcha_solver:
             raise ValueError('Please provide a captcha solver')
 
     async def solve_turnstile(self, url) -> bool:
@@ -230,9 +235,9 @@ class PlaywrightCaptchaSolver(BaseCaptchaSolver):
                     timeout=self._browser_timeout
                 )
                 self._logger.info('solve captcha...')
-                task_id = await self._solver.create_turnstile_task(url, site_key)
+                task_id = await self._captcha_solver.create_turnstile_task(url, site_key)
                 self._logger.info(f'task id: {task_id}')
-                captcha_token = await self._solver.get_turnstile_result(task_id)
+                captcha_token = await self._captcha_solver.get_turnstile_result(task_id)
                 self._logger.info(f'submit captcha token: {captcha_token}')
                 result = await page.request.post(
                     f'https://editor.midjourney.com/captcha/api/c/{custom_id}/submit',

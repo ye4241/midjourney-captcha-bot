@@ -36,8 +36,8 @@ async def run(**kwargs):
 async def main():
     from utils import build_parser, parse_args
     parser = build_parser()
-    parser.add_argument('--host', type=str, default='0.0.0.0')
-    parser.add_argument('--port', type=int, default=8000)
+    parser.add_argument('--host', type=str, default='0.0.0.0', help='FastAPI host')
+    parser.add_argument('--port', type=int, default=8000, help='FastAPI port')
     args = parse_args(parser)
     await run(**args)
 
