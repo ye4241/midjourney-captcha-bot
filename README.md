@@ -20,6 +20,8 @@ venv\Scripts\activate.ps1
 pip install -r requirements.txt
 # Install Playwright
 playwright install
+# Install discord-self package if you want to use discord bot
+pip install git+https://github.com/dolfies/discord.py-self.git
 ```
 
 ## Run with Playwright and YesCaptcha or 2Captcha

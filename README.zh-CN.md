@@ -18,6 +18,8 @@ venv\Scripts\activate.ps1
 pip install -r requirements.txt
 # 安装 Playwright
 playwright install
+# 如果你想使用 Discord 机器人，安装 discord-self 包
+pip install git+https://github.com/dolfies/discord.py-self.git
 ```
 
 ## 搭配 Playwright 和 YesCaptcha / 2Captcha 运行
