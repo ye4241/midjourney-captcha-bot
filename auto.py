@@ -33,7 +33,7 @@ async def hook(api_host: str, api_secret: str, **kwargs):
             channel_id = int(account['channelId'])
             user_token = account['userToken']
 
-            from utils import MidjourneyBot
+            from utils.bot import MidjourneyBot
             bot = MidjourneyBot(logger, user_token, guild_id, channel_id, solver)
             solved = await bot.imagine(imagine_prompt, imagine_timeout)
             if not solved:
