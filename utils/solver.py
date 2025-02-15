@@ -10,8 +10,6 @@ class BaseCaptchaSolver:
         :param browser_headless:
         :param browser_incognito:
         :param browser_timeout:
-        :param browser_user_data_path:
-        :param browser_screencast_save_path:
         :param yescaptcha_key:
         :param twocaptcha_key:
         """
@@ -46,7 +44,7 @@ class BaseCaptchaSolver:
                 'referer': 'https://936929561302675456.discordsays.com/captcha/index.html',
                 'user-agent': self.USER_AGENT
             }
-            async with httpx.AsyncClient(headers=headers, verify=False, proxies=self._proxy) as client:
+            async with httpx.AsyncClient(headers=headers, verify=False, proxy=self._proxy) as client:
                 self._logger.debug(f'ack captcha: {url}')
                 response = await client.get(url)
                 if response.status_code != 200:
