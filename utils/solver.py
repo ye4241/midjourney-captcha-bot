@@ -192,7 +192,7 @@ class PlaywrightCaptchaSolver(BaseCaptchaSolver):
                 custom_id: str | None = None
                 custom_id_event = asyncio.Event()
                 # https://editor.midjourney.com/captcha/api/c/oI4cLSolUU6h2--V3n3TvznU_HHABugkDQ0WECvDcKI5QBpq16-pwBSnwCro7hlmEn4Tkuf3NjbQf1w6/ack?hash=nl2cj4Lkt6m9z3Z_aKKIQA
-                custom_id_regex = re.compile('https://editor.midjourney.com/captcha/api/c/(.*?)/ack\?hash=')
+                custom_id_regex = re.compile(r'https://editor.midjourney.com/captcha/api/c/(.*?)/ack\?hash=')
 
                 async def handle_response(response: Response):
                     response_url = response.url
