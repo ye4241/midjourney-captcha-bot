@@ -1,0 +1,9 @@
+services:
+  app:
+    image: midjourney-captcha-bot:latest
+    container_name: midjourney-captcha-bot
+    build: .
+    command: server.py --solver-type=playwright --yescaptcha-key=xxx
+    ports:
+      - '8000:8000'
+    restart: always
