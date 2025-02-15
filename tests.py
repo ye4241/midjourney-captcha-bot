@@ -11,7 +11,7 @@ class Tests(unittest.IsolatedAsyncioTestCase):
         self.__captcha_solver_args = {
             'logger': logger,
             'proxy': os.environ.get('PROXY'),
-            'browser_headless': False,
+            'browser_headless': True,
             'browser_incognito': True,
             'yescaptcha_key': os.environ.get('YESCAPTCHA_KEY'),
             'twocaptcha_key': os.environ.get('TWOCAPTCHA_KEY'),
