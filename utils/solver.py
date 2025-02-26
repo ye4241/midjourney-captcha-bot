@@ -23,6 +23,7 @@ class BaseCaptchaSolver:
         self._browser_timeout = self._kwargs.get('browser_timeout', 30)
         self._yescaptcha_key = self._kwargs.get('yescaptcha_key')
         self._twocaptcha_key = self._kwargs.get('twocaptcha_key')
+        self._captcha_solver = None
         if self._yescaptcha_key:
             from utils import YesCaptchaSolver
             self._captcha_solver = YesCaptchaSolver(self._yescaptcha_key)
