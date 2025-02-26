@@ -17,7 +17,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def parse_args(parser: argparse.ArgumentParser) -> dict:
     args = vars(parser.parse_args())
-    args = {k.replace('-', '_'): v for k, v in args.items()}
     args['browser_headless'] = args['browser_headless'] == 'true'
     args['browser_incognito'] = args['browser_incognito'] == 'true'
     verbose = args['verbose']
